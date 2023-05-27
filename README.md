@@ -70,7 +70,6 @@ To use Link Checker, follow these steps:
 4. The Link Checker will scan the webpage, extract links, and check the status of each link. Then
 it will visit each link and extract all URLs present on these secondary level pages, and so on. 
 Starting from the home page, it will visit all the available links on your website.
-
 The results will be displayed in the folder "statuses". For Windows users, this folder will
 be created automatically. For Linux users, it may be necessary to run the program as `root` or
 to manually create the "statuses" folder with `777` access rights assigned.
