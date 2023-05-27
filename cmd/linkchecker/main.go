@@ -1,36 +1,59 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"linkchecker/pkg/checker"
-	"net/http"
+	"net/url"
 	"os"
+	"regexp"
+	"strings"
+	"sync"
 )
 
+func printUsage() {
+	fmt.Fprintf(os.Stderr, "\nUsage: %s <url>\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "\nThe <url> argument must be a URL in the following formats:\n")
+	fmt.Fprintf(os.Stderr, "\nexample.com\nwww.example.com\nhttp://example.com\nhttps://example.com\n"+
+		"http://subdomain.example.com\nhttps://subdomain.example.com\n")
+}
+
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Fprintf(os.Stderr, "Usage: %s <url>\n", os.Args[0])
+	flag.Usage = printUsage
+
+	flag.Parse()
+
+	if len(flag.Args()) != 1 {
+		flag.Usage()
 		os.Exit(1)
 	}
 
-	url := os.Args[1]
+	urlArg := flag.Arg(0)
 
-	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to fetch %s: %s\n", url, err)
+	// If the URL does not start with "http://" or "https://", default to "http://"
+	if !strings.HasPrefix(urlArg, "http://") && !strings.HasPrefix(urlArg, "https://") {
+		urlArg = "http://" + urlArg
+	}
+
+	// Parse the URL and get the hostname
+	baseURL, err := url.Parse(urlArg)
+	if err != nil || baseURL.Hostname() == "" {
+		fmt.Fprintf(os.Stderr, "Invalid URL: %s\n", urlArg)
 		os.Exit(1)
 	}
-	defer resp.Body.Close()
 
-	links := checker.ExtractLinks(resp.Body)
-
-	linkStatuses := make([]checker.LinkStatus, len(links))
-
-	for i, link := range links {
-		linkStatuses[i] = checker.CheckLink(link)
+	// Ensure the hostname part of the URL is in FQDN format
+	fqdnRe := regexp.MustCompile(`^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	if !fqdnRe.MatchString(baseURL.Hostname()) {
+		printUsage()
+		os.Exit(1)
 	}
 
-	for _, status := range linkStatuses {
-		fmt.Printf("Link: %s Status: %s\n", status.Link, status.Status)
-	}
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	go checker.CheckLinksRecursively(baseURL, baseURL, &wg)
+
+	// Wait for all goroutines to finish
+	wg.Wait()
 }
