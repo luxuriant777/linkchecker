@@ -46,27 +46,12 @@ Once you have Go installed, you can follow these steps to install Link Checker:
     ```
    This will create an executable file named `linkchecker` in the current directory.
 
-
-4. Run the Link Checker:
-   - Linux:
-    ```shell
-    ./linkchecker <url>
-    ```
-   - Windows:
-    ```shell
-    linkchecker.exe <url>
-    ```
-    Replace `<url>` with the URL of the website you want to check for broken links, for example:
-    ```shell
-    ./linkchecker https://example.com
-    ```
-
 ## Usage
 To use Link Checker, follow these steps:
 
 1. Open your terminal or command prompt.
 
-2. Navigate to the directory where you have the linkchecker executable.
+2. Navigate to the directory where you have the `linkchecker` executable.
 
 3. Run the Link Checker:
    - Linux:
@@ -82,7 +67,10 @@ To use Link Checker, follow these steps:
     ./linkchecker https://example.com
     ```
 
-4. The Link Checker will scan the webpage, extract links, and check the status of each link. 
+4. The Link Checker will scan the webpage, extract links, and check the status of each link. Then
+it will visit each link and extract all URLs present on these secondary level pages, and so on. 
+Starting from the home page, it will visit all the available links on your website.
+
 The results will be displayed in the folder "statuses". For Windows users, this folder will
 be created automatically. For Linux users, it may be necessary to run the program as `root` or
 to manually create the "statuses" folder with `777` access rights assigned.
