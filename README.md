@@ -104,9 +104,9 @@ This project is licensed under the
 The Link Checker program is provided as-is, without any warranties or guarantees of any kind. The authors and
 contributors of this program disclaim any liability for damages or losses that may arise from its use.
 
-The tool is intended to assist in checking broken links and generating URL lists based on status codes. 
-However, it is your responsibility to use this instrument responsibly and comply with the terms of service and 
-guidelines of the websites you are checking.
+The tool is designed to assist in identifying broken links and generating URL lists based on status codes.
+However, it falls under your obligation to use this tool judiciously and comply with the terms of service and
+guidelines of the websites you are examining.
 
 Please exercise caution and use the Link Checker at your own risk. We recommend testing it on a small
 scale or non-production environment before using it extensively. 
