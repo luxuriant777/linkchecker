@@ -19,7 +19,7 @@ Once you have Go installed, you can follow these steps to install Link Checker:
     ```shell
     go build ./cmd/linkchecker
     ```
-   This will create an executable file named linkchecker in the current directory.
+   This will create an executable file named `linkchecker` in the current directory.
 
 
 4. Run the Link Checker:
