@@ -88,7 +88,8 @@ to manually create the "statuses" folder with `777` access rights assigned.
    https://example.com/page4 -> https://example.com/error-test
 
     ```
-    That's it! You can now use Link Checker to check for broken links on websites or create a comprehensive sitemaps.
+   That's it! You can now use these results to effectively address the found broken links on your website or create
+   comprehensive sitemaps.
 
 ## Contributing
 Contributions are welcome! If you find any issues or have suggestions for improvements, please create an issue 
