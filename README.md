@@ -3,11 +3,13 @@ Link Checker is a powerful command-line tool, written in Go, designed to improve
 of your website. It provides robust features not only for identifying broken links, but also for tracking the
 status codes returned by all URLs on your site. The results are conveniently sorted and saved in separate files
 according to their corresponding HTTP status codes.
+![Screenshot_2](https://github.com/luxuriant777/linkchecker/assets/20545475/e014c523-d7a5-4c73-a52a-a387d3e9abf1)
 
 In addition to checking links and logging response statuses, Link Checker can also serve as an invaluable tool
 for creating a comprehensive list of all the URLS available on the website. By effectively traversing and 
 cataloguing every reachable URL on a website, it enables you to create comprehensive sitemaps. This functionality
 can significantly aid in improving the SEO of your site, making your content more discoverable and navigable.
+![Screenshot_3](https://github.com/luxuriant777/linkchecker/assets/20545475/53bbb500-7ee3-411b-8f41-58c9cdc2edf5)
 
 ## Features
 - Broken Link Checking: Identifies and logs all broken links (HTTP status 404) on your website. Broken links
@@ -74,6 +76,7 @@ Starting from the home page, it will visit all the available links on your websi
    The results will be displayed in the folder "statuses". For Windows users, this folder will
    be created automatically. For Linux users, it may be necessary to run the program as `root` or
    to manually create the "statuses" folder with `777` access rights assigned.
+   ![Screenshot_1](https://github.com/luxuriant777/linkchecker/assets/20545475/b0a48a30-2fe4-42b9-bb30-fc4f71db58e4)
 
     Example output:
    - `200.txt`:
