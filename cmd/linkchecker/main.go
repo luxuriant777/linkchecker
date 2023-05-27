@@ -4,11 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"linkchecker/pkg/checker"
+	"net/http" // Add this for http.Get
 	"net/url"
 	"os"
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 )
 
 func printUsage() {
@@ -32,7 +34,7 @@ func main() {
 
 	// If the URL does not start with "http://" or "https://", default to "http://"
 	if !strings.HasPrefix(urlArg, "http://") && !strings.HasPrefix(urlArg, "https://") {
-		urlArg = "http://" + urlArg
+		urlArg = "https://" + urlArg
 	}
 
 	// Parse the URL and get the hostname
@@ -49,11 +51,53 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Attempt to fetch the provided URL
+	resp, err := http.Get(baseURL.String())
+	if err != nil {
+		// Print an error and exit if the fetch fails
+		fmt.Fprintf(os.Stderr, "Failed to fetch %s: %s\n", baseURL.String(), err)
+		os.Exit(1)
+	}
+	// Close the response body after checking
+	resp.Body.Close()
+
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	go checker.CheckLinksRecursively(baseURL, baseURL, &wg)
+	go func() {
+		var prevProcessedURLs int
+		noChangeCount := 0 // Counter for no change in processed URLs
+		for {
+			select {
+			case <-time.After(3 * time.Second):
+				if checker.ProcessedURLs == prevProcessedURLs {
+					noChangeCount++
+					if noChangeCount >= 35 { // No change in processed URLs for 35 seconds
+						fmt.Println("No new URLs found for 35 seconds. Exiting...")
+						os.Exit(0)
+					}
+					fmt.Println("No new URLs have been found. The parsing process will continue...")
+				} else {
+					fmt.Printf("Processed URLs: %d\n", checker.ProcessedURLs)
+					noChangeCount = 0 // Reset the counter if there's a change in processed URLs
+				}
+				prevProcessedURLs = checker.ProcessedURLs
+			}
+		}
+	}()
+
+	go checker.CheckLinksRecursively(baseURL, baseURL, baseURL.String(), &wg)
 
 	// Wait for all goroutines to finish
 	wg.Wait()
+
+	checker.ProcessLinkCheckResults()
+
+	if checker.DidLinkCheckingStart() {
+		fmt.Println("Link checking completed.\n" +
+			"Results can be found in the 'statuses' folder.\n" +
+			"Each file contains the list of URLs returned with the corresponding status code.\n" +
+			"The '404.txt' follows the more detailed format:\n" +
+			"<URL of the page where broken links were found> -> <the broken link>")
+	}
 }
