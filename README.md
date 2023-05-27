@@ -72,7 +72,7 @@ The results will be displayed in the terminal.
 
 ## Contributing
 Contributions are welcome! If you find any issues or have suggestions for improvements, please create an issue 
-or submit a pull request.
+or submit a pull request on the `dev` branch.
 
 ## License
 

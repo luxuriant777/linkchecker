@@ -1,8 +1,11 @@
 name: Linkchecker Releaser
 
 on:
-  release:
-    types: [created]
+  pull_request:
+    types:
+      - closed
+    branches:
+      - dev
 
 jobs:
   build:
@@ -11,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: main
 
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -38,15 +43,34 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Fetch commit history
+        id: commit_history
+        run: |
+          git fetch --unshallow --tags
+          PREVIOUS_RELEASE_TAG=${{ steps.prev_release.outputs.tag_name }}
+          git log --pretty=format:"- %s [%h](https://github.com/${{ github.repository }}/commit/%H)" $PREVIOUS_RELEASE_TAG..HEAD > changelog.txt
+          echo "::set-output name=changelog::$(cat changelog.txt)"
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          PREVIOUS_RELEASE_BODY=${{ steps.prev_release.outputs.release_body }}
+          COMMIT_HISTORY=${{ steps.commit_history.outputs.changelog }}
+          NEW_RELEASE_BODY="${PREVIOUS_RELEASE_BODY}
+          
+          ### Changelog
+          ${COMMIT_HISTORY}"
+          echo "::set-output name=new_body::$NEW_RELEASE_BODY"
+
       - name: Create Release for Linux
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           files: ./linkchecker
           prerelease: false
-          body: "Release for Linux"
-          tag_name: v${{ steps.prev_release.outputs.next_version }}
-          release_name: Release ${{ steps.prev_release.outputs.next_version }} for Linux
+          body: ${{ steps.changelog.outputs.new_body }}
+          tag_name: v${{ steps.prev_release.outputs.tag_name }}
+          release_name: Release ${{ steps.prev_release.outputs.tag_name }} for Linux
 
       - name: Create Release for Windows
         uses: "marvinpinto/action-automatic-releases@latest"
@@ -54,6 +78,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           files: ./linkchecker.exe
           prerelease: false
-          body: "Release for Windows"
-          tag_name: v${{ steps.prev_release.outputs.next_version }}
-          release_name: Release ${{ steps.prev_release.outputs.next_version }} for Windows
+          body: ${{ steps.changelog.outputs.new_body }}
+          tag_name: v${{ steps.prev_release.outputs.tag_name }}
+          release_name: Release ${{ steps.prev_release.outputs.tag_name }} for Windows
