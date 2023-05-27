@@ -94,7 +94,7 @@ Starting from the home page, it will visit all the available links on your websi
    results.
 
    That's it! You can now use these results to effectively address the found broken links on your website or create
-   comprehensive sitemaps.
+   comprehensive sitemaps using the results offered by the `200.txt` output.
 
 ## Contributing
 Contributions are welcome! If you find any issues or have suggestions for improvements, please create an issue 
