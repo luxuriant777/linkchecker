@@ -1,3 +1,5 @@
-module github.com/luxuriant777/linkchecker
+module linkchecker
 
 go 1.20
+
+require golang.org/x/net v0.10.0
